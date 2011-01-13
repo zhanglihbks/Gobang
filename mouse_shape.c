@@ -34,6 +34,8 @@ static u32_t cursor_pixel[C_WIDTH * C_HEIGHT]=
 };
 
 static u32_t shape_save[C_WIDTH * C_HEIGHT];
+char who = 1;
+char board[V_NUM*H_NUM];
 
 int save_shape(int x,int y)
 {
@@ -41,8 +43,12 @@ int save_shape(int x,int y)
     int j = 0;
     u32_t *p = fb_info.fb_men;
     for(i = 0;i < C_HEIGHT; i++)
+    {
         for(j = 0;j < C_WIDTH; j++)
-            shape_save[j +i*C_WIDTH] = p[x+j+(y+i)*fb_info.w];
+        {
+           shape_save[j +i*C_WIDTH] = p[x+j+(y+i)*fb_info.w];
+        }
+    }
     return 0;
 }
 int repair_shape(int x,int y)
@@ -89,10 +95,29 @@ int get_mouse_info(int fd,mouse_event * event)
     {
         event->button = (buf[0]&0x07);
         event->dx = buf[1];
-        event->dy = buf[2];
+        event->dy = -buf[2];
         event->dz = buf[3];
     }
-    return 0;
+    return n;
+}
+
+int chess_count(int x,int y)
+{
+    int i = x;
+    int j = y;
+    
+    i = (x - X_STARTING)/SPACE;
+    j = (y - Y_STARTING)/SPACE;
+
+    if((x - X_STARTING)%SPACE >= (SPACE/2))
+    {
+        i++;
+    }
+    if((y - Y_STARTING)%SPACE >= (SPACE/2))
+    {
+        j++;
+    }
+    board[i+j*V_NUM] = who;
 }
 
 int mouse_doing(void)
@@ -100,7 +125,7 @@ int mouse_doing(void)
     int fd = 0;
     int mx = 512;
     int my = 384;
-    mouse_event *event = NULL;
+    mouse_event event;
     fd = open("/dev/input/mice",O_RDWR|O_NONBLOCK);
     if(fd < 0 )
     {
@@ -109,13 +134,14 @@ int mouse_doing(void)
     }
     draw_cursor(mx,my);
 
+
     while(1)
     {
-        if((get_mouse_info(fd,event) > 0))
+        if(get_mouse_info(fd,&event) > 0)
         {
             repair_shape(mx,my);
-            mx = event->dx;
-            my = event->dy;
+            mx += event.dx;
+            my += event.dy;
             mx = (mx >= 0) ? mx:0;
             my = (my >= 0) ? my:0;
             
@@ -128,12 +154,15 @@ int mouse_doing(void)
             {
                 my = fb_info.h - C_HEIGHT;
             }
-            
-            switch(event->button)
+             draw_cursor(mx,my);
+
+            switch(event.button)
             {
                 case 1:
+//printf("%d\n", event.button);                
+                    repair_shape(mx, my);
                     draw_one_chess(mx,my);
-                    save_shape(mx,my);
+                    draw_cursor(mx, my);
                     break;
                 case 2:
                     break;
@@ -142,8 +171,7 @@ int mouse_doing(void)
                 default :
                     break;
             }
-            draw_cursor(mx,my);
-        }
+         }
         usleep(100);
     }
     return 0;
