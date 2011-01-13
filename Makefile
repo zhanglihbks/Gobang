@@ -1,4 +1,4 @@
-scr = main.c basic_shape.c board.c
+scr = main.c basic_shape.c board.c draw_chess.c  mouse_shape.c
 para  = -Wall
 
 
@@ -9,3 +9,4 @@ clean :
 	-rm -rf *.o
 	-rm -rf *~
 	-rm -rf a.out
+	-rm -rf *.gch

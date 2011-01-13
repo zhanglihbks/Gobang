@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <string.h>
+//#include <string.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -8,8 +8,14 @@
 #include <linux/fb.h>
 #include <errno.h>
 #include "main.h"
+#include "basic_shape.h"
+#include "mouse_shape.h"   
+//extern void get_point(int x,int y);
+//extern void draw_circle(int x0,int y0,int r,u32_t color);
+extern void draw_one_chess(int x,int y);
 
 v_info fb_info;
+
 void create_scr_fb(void)
 {
     struct fb_var_screeninfo fb_var;
@@ -60,21 +66,32 @@ void scan_screen(void)
     }
 }
 
-int draw_point(int x,int y,u32_t color)
-{
-    u32_t *p = NULL;
-    p = fb_info.fb_men;
-    p[x+fb_info.w*y] = color;
-    return 0;
-}
+//int draw_point(int x,int y,u32_t color)
+//{
+    //u32_t *p = NULL;
+    //p = fb_info.fb_men;
+    //p[x+fb_info.w*y] = color;
+    //return 0;
+//}
 
 int main(void) 
 {
+    int x = 0,y = 0;
     create_scr_fb();
     //scan_screen();
     //scan_line();
     //draw_line(400,767,0,0,0x000000ff);
     //draw_line(256,192,768,576,0x000000ff);
     draw_board();
+    #if 0
+    while(1)
+    {
+        printf("please input the location of the point:\n");
+        scanf("%d %d",&x,&y);
+        draw_one_chess(x,y);
+    }
+    #endif
+    mouse_doing();
+        //repair_shape(120,100);
     return 0; 
 }
