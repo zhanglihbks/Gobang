@@ -1,0 +1,56 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BORD	mouse_shape.c	14;"	d	file:
+C_HEIGHT	main.h	35;"	d
+C_WIDTH	main.h	34;"	d
+H_NUM	main.h	4;"	d
+SPACE	main.h	33;"	d
+T__	mouse_shape.c	13;"	d	file:
+V_NUM	main.h	5;"	d
+X_STARTING	main.h	31;"	d
+X__	mouse_shape.c	15;"	d	file:
+Y_STARTING	main.h	32;"	d
+_MAIN_H	main.h	2;"	d
+board	mouse_shape.c	/^char board[V_NUM*H_NUM];$/;"	v
+bpp	main.h	/^    int bpp;$/;"	m	struct:__anon1
+button	main.h	/^    int button;$/;"	m	struct:__anon2
+check_all	mouse_shape.c	/^int check_all(void)$/;"	f
+check_count	mouse_shape.c	/^int check_count(int x,int y)$/;"	f
+check_five	mouse_shape.c	/^int check_five(int x,int y)$/;"	f
+choose_color	draw_chess.c	/^int choose_color(int x,int y)$/;"	f
+color_choice	mouse_shape.c	/^u32_t color_choice = 0x000000ff;$/;"	v
+create_scr_fb	main.c	/^void create_scr_fb(void)$/;"	f
+cursor_pixel	mouse_shape.c	/^static u32_t cursor_pixel[C_WIDTH * C_HEIGHT]=$/;"	v	file:
+draw_board	board.c	/^void draw_board(void)$/;"	f
+draw_circle	basic_shape.c	/^void draw_circle(int x0,int y0,int r,u32_t color)$/;"	f
+draw_cursor	mouse_shape.c	/^int draw_cursor(int x,int y)$/;"	f
+draw_line	basic_shape.c	/^void draw_line(int x1,int y1,int x2,int y2,u32_t color)$/;"	f
+draw_one_chess	draw_chess.c	/^int draw_one_chess(int x,int y)$/;"	f
+draw_point	basic_shape.c	/^int draw_point(int x,int y,u32_t color)$/;"	f
+dx	main.h	/^    int dx;$/;"	m	struct:__anon2
+dy	main.h	/^    int dy;$/;"	m	struct:__anon2
+dz	main.h	/^    int dz;$/;"	m	struct:__anon2
+fb_info	main.c	/^v_info fb_info;$/;"	v
+fb_mem	main.h	/^    void *fb_mem;$/;"	m	struct:__anon1
+get_mouse_info	mouse_shape.c	/^int get_mouse_info(int fd,mouse_event * event)$/;"	f
+h	main.h	/^    int h;$/;"	m	struct:__anon1
+main	main.c	/^int main(void) $/;"	f
+mouse_doing	mouse_shape.c	/^int mouse_doing(void)$/;"	f
+mouse_event	main.h	/^}mouse_event;$/;"	t	typeref:struct:__anon2
+para	Makefile	/^para  = -Wall$/;"	m
+print_choice	mouse_shape.c	/^int print_choice(void)$/;"	f
+repair_shape	mouse_shape.c	/^int repair_shape(int x,int y)$/;"	f
+save_shape	mouse_shape.c	/^int save_shape(int x,int y)$/;"	f
+scan_screen	main.c	/^void scan_screen(void)$/;"	f
+scr	Makefile	/^scr = main.c basic_shape.c board.c draw_chess.c  mouse_shape.c$/;"	m
+shape_save	mouse_shape.c	/^static u32_t shape_save[C_WIDTH * C_HEIGHT];$/;"	v	file:
+swap	basic_shape.c	/^void swap(int *a,int *b)$/;"	f
+u32_t	main.h	/^typedef unsigned int u32_t;$/;"	t
+u8_t	main.h	/^typedef unsigned char u8_t;$/;"	t
+v_info	main.h	/^}v_info;$/;"	t	typeref:struct:__anon1
+w	main.h	/^    int w;$/;"	m	struct:__anon1
+who	mouse_shape.c	/^char who = 1;$/;"	v

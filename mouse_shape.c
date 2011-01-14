@@ -4,13 +4,18 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <linux/fb.h>
+#include <sys/mman.h>
+#include <sys/ioctl.h>
+#include <error.h>
+#include <string.h>
 
 #define T__ 0xffffffff
 #define BORD 0x0
 #define X__ 0xffff
 
 extern v_info fb_info;
-extern void draw_one_chess(int x,int y);
+extern int draw_one_chess(int x,int y);
 
 static u32_t cursor_pixel[C_WIDTH * C_HEIGHT]=
 {
@@ -35,13 +40,14 @@ static u32_t cursor_pixel[C_WIDTH * C_HEIGHT]=
 
 static u32_t shape_save[C_WIDTH * C_HEIGHT];
 char who = 1;
-char board[V_NUM*H_NUM];
+char board[V_NUM*H_NUM];//to store the chessboard information
+u32_t color_choice = 0x000000ff;
 
 int save_shape(int x,int y)
 {
     int i = 0;
     int j = 0;
-    u32_t *p = fb_info.fb_men;
+    u32_t *p = fb_info.fb_mem;
     for(i = 0;i < C_HEIGHT; i++)
     {
         for(j = 0;j < C_WIDTH; j++)
@@ -81,7 +87,7 @@ int draw_cursor(int x,int y)
     return 0;
 }
 
-int get_mouse_info(int fd,mouse_event * event)
+int get_mouse_info(int fd,mouse_info_t * mouse_info)
 {
     char buf[8] = {0};
     int n = 0;
@@ -93,15 +99,15 @@ int get_mouse_info(int fd,mouse_event * event)
     }
     else
     {
-        event->button = (buf[0]&0x07);
-        event->dx = buf[1];
-        event->dy = -buf[2];
-        event->dz = buf[3];
+        mouse_info->button = (buf[0]&0x07);
+        mouse_info->dx = buf[1];
+        mouse_info->dy = -buf[2];
+        mouse_info->dz = buf[3];
     }
     return n;
 }
 
-int chess_count(int x,int y)
+int check_count(int x,int y)
 {
     int i = x;
     int j = y;
@@ -118,6 +124,70 @@ int chess_count(int x,int y)
         j++;
     }
     board[i+j*V_NUM] = who;
+    return 0;
+}
+
+int check_five(int x,int y)
+{
+    int i = 0;
+    int j = 0;
+    char storage = 0;
+    char counter = 0;
+    char n_x[4] = {0,1,1,1};
+    char n_y[4] = {1,0,1,-1};
+    char nx = 0;
+    char ny = 0;
+
+    storage = board[x+y*V_NUM];//notice there,get value on the board
+
+    if(storage == 0)
+    {
+        return 0;
+    }
+    for(j = 0;j < 4;j++)
+    {
+        counter = 1;  
+        nx = x;
+        ny = y;
+        for(i = 1;i < 5;i++)
+        {
+            nx += n_x[j];
+            ny += n_y[j];
+            if(board[nx+ny*V_NUM] == storage)
+                counter++;
+            else
+                break;
+        }
+        if(counter == 5)
+            return storage;
+    }
+    return 0;
+}
+
+int check_all(void)
+{
+    int i = 0;
+    int j = 0;
+    for(i = 0;i < H_NUM;i++)
+    {
+        for(j = 0;j < V_NUM;j++)
+        {
+            if(check_five(j,i) != 0)
+            {
+				printf("%d won!\n", who);
+				return 1;
+                
+            }
+        }
+    }    
+    return  0;
+}
+
+int print_choice(void)
+{
+    draw_circle(40,60,20,0x00ff0000);
+    draw_circle(40,140,20,0x000000ff);
+    return 0;
 }
 
 int mouse_doing(void)
@@ -125,7 +195,8 @@ int mouse_doing(void)
     int fd = 0;
     int mx = 512;
     int my = 384;
-    mouse_event event;
+    char victory = -1;
+    mouse_info_t mouse_info;
     fd = open("/dev/input/mice",O_RDWR|O_NONBLOCK);
     if(fd < 0 )
     {
@@ -133,15 +204,15 @@ int mouse_doing(void)
         exit(1);
     }
     draw_cursor(mx,my);
-
+    print_choice();
 
     while(1)
     {
-        if(get_mouse_info(fd,&event) > 0)
+        if(get_mouse_info(fd,&mouse_info) > 0)
         {
             repair_shape(mx,my);
-            mx += event.dx;
-            my += event.dy;
+            mx += mouse_info.dx;
+            my += mouse_info.dy;
             mx = (mx >= 0) ? mx:0;
             my = (my >= 0) ? my:0;
             
@@ -156,12 +227,16 @@ int mouse_doing(void)
             }
              draw_cursor(mx,my);
 
-            switch(event.button)
+            switch(mouse_info.button)
             {
                 case 1:
 //printf("%d\n", event.button);                
                     repair_shape(mx, my);
-                    draw_one_chess(mx,my);
+                    if((draw_one_chess(mx,my)) == 0)
+                    {
+                        check_count(mx,my);
+                        victory = check_all();
+                    }
                     draw_cursor(mx, my);
                     break;
                 case 2:
@@ -170,6 +245,29 @@ int mouse_doing(void)
                     break;
                 default :
                     break;
+            }
+            if(victory == 1)
+            {
+                printf("Player %d won!\n",who);
+                printf("Continue ? y/n \n");
+                if(getchar() == '\n')
+                {
+                    break;
+                }
+                else
+                {
+					memset((u8_t *)fb_info.fb_mem, 0, fb_info.w*fb_info.h*fb_info.bpp/8);
+					memset(board, 0, H_NUM*V_NUM);
+					draw_board();
+					print_choice();
+					color_choice = 0x000000ff;
+					who = 1;
+					victory = -1;
+					mx = 512;
+					my = 384;
+					draw_cursor(mx, my);
+                }
+                getchar();
             }
          }
         usleep(100);

@@ -5,6 +5,7 @@
 #include "main.h"
 
 extern v_info fb_info; 
+
 void swap(int *a,int *b)
 {
     int temp;
@@ -16,7 +17,7 @@ void swap(int *a,int *b)
 int draw_point(int x,int y,u32_t color)
 {
     u32_t *p = NULL;
-    p = fb_info.fb_men;
+    p = fb_info.fb_mem;
     p[x+fb_info.w*y] = color;
     return 0;
 }
@@ -83,7 +84,7 @@ void draw_line(int x1,int y1,int x2,int y2,u32_t color)
     }
 }
 
-void draw_circle(int x0,int y0,int r,u32_t color)
+int draw_circle(int x0,int y0,int r,u32_t color)
 {
     int x = 0;
     int y = r;
@@ -126,5 +127,5 @@ void draw_circle(int x0,int y0,int r,u32_t color)
         }
         x++;
     }
-
+    return 0;
 }
