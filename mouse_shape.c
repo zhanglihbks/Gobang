@@ -107,9 +107,9 @@ int get_mouse_info(int fd,mouse_info_t * mouse_info)
     return n;
 }
 
-int check_count(int x,int y)
-{
-    int i = x;
+int check_count(int x,int y)//get the relative position of x ang y 
+{                           //on the board
+    int i = x;              
     int j = y;
     
     i = (x - X_STARTING)/SPACE;
@@ -139,7 +139,7 @@ int check_five(int x,int y)
     char ny = 0;
 
     storage = board[x+y*V_NUM];//notice there,get value on the board
-
+                               //the first chess of the five being bo becked
     if(storage == 0)
     {
         return 0;
@@ -153,13 +153,17 @@ int check_five(int x,int y)
         {
             nx += n_x[j];
             ny += n_y[j];
-            if(board[nx+ny*V_NUM] == storage)
+            if(board[nx+ny*V_NUM] == storage)  //notice  this line and the 141
+            {                                   //line
                 counter++;
+            }
             else
+            {
                 break;
+            }
         }
         if(counter == 5)
-            return storage;
+            return storage;//there storage is the last chess of the five 
     }
     return 0;
 }
@@ -174,7 +178,7 @@ int check_all(void)
         {
             if(check_five(j,i) != 0)
             {
-				printf("%d won!\n", who);
+                //printf("%d won!\n", who);
 				return 1;
                 
             }
