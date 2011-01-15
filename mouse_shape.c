@@ -213,6 +213,7 @@ int mouse_doing(void)
             repair_shape(mx,my);
             mx += mouse_info.dx;
             my += mouse_info.dy;
+
             mx = (mx >= 0) ? mx:0;
             my = (my >= 0) ? my:0;
             
@@ -241,7 +242,7 @@ int mouse_doing(void)
                     break;
                 case 2:
                     break;
-                case 3:
+                case 4:
                     break;
                 default :
                     break;

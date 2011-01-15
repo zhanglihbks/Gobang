@@ -69,6 +69,6 @@ int main(void)
 {
     create_scr_fb();
     draw_board();
-    //mouse_doing();
+    mouse_doing();
     return 0; 
 }
